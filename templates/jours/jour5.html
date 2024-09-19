@@ -1,10 +1,4 @@
-{% extends 'base.html' %}
-
-{% block head %}
-
-{% endblock %}
-
-{% block body %}
+{% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
 <a href="#headerTop">
     <div class="goTop">
         <p>🍿</p>
@@ -45,9 +39,7 @@
 </svg>
 -->
 
-<img src="../static/images/background.png" class="background_svg">
-
-<div id="map"></div>
+<img src="../static/images/background.png" class="background_svg" />
 
 <div class="planning">
     <div class="container_titrePlanning">
@@ -109,27 +101,35 @@
     </div>
     {% for film in films %}
     <div class="container_infoFilm">
-        <img src={{film.affiche}} class="affiche" />
+        <img src="{{film.affiche}}" class="affiche" />
         <div class="infoFilm">
             <div class="blur-background"></div>
             <div>
                 <h3 class="titreFilm">{{film.titre}}</h3>
                 <div class="info-content">
-                    <p class="realisateur">Réalisateur : {{film.realisateur}}</p>
-                    <p class="casting">Casting : {% for acteur in film.casting %}{{acteur}}, {% endfor %}</p>
-                    <p class="genre">Genre : {% for genre in film.genres %}{{genre}}, {% endfor %}</p>
-                    <p class="duree">Durée : {{film.duree.heure}}h{{film.duree.minute}}</p>
+                    <p class="realisateur">
+                        Réalisateur : {{film.realisateur}}
+                    </p>
+                    <p class="casting">
+                        Casting : {% for acteur in film.casting %}{{acteur}}, {%
+                        endfor %}
+                    </p>
+                    <p class="genre">
+                        Genre : {% for genre in film.genres %}{{genre}}, {%
+                        endfor %}
+                    </p>
+                    <p class="duree">
+                        Durée : {{film.duree.heure}}h{{film.duree.minute}}
+                    </p>
                 </div>
                 <div class="synopsis_container">
-                    <p class="synopsis">
-                        {{film.synopsis}}
-                    </p>
+                    <p class="synopsis">{{film.synopsis}}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div style="height: 10px;"></div>
+    <div style="height: 10px"></div>
     {% for horaire in film.horaires %}
     <div class="seance_container">
         <div class="cinema">
@@ -148,50 +148,5 @@
     <div class="responsive-div"></div>
     {% endfor %}
 </div>
-
-
-
-<script>
-    mapboxgl.accessToken = '###';
-
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [2.3522, 48.8566],
-        zoom: 12
-    });
-
-    map.addControl(new mapboxgl.NavigationControl());
-
-    var locations = [
-        { coordinates: [2.348973, 48.848363], description: "Écoles Cinéma club" },
-        { coordinates: [2.546596, 48.840113], description: "UGC Ciné Cité Noisy-le-Grand" },
-        { coordinates: [2.343014, 48.849777], description: "UGC Ciné Cité les Halles" },
-        { coordinates: [2.342790, 48.849510], description: "Reflet Medicis" },
-        { coordinates: [2.342790, 48.849510], description: "Fimothèque du quartier Latin" },
-        { coordinates: [2.343223, 48.849980], description: "Le Champo" },
-        { coordinates: [2.330526, 48.842813], description: "MK2 Parnasse" },
-        { coordinates: [2.352129, 48.847530], description: "Le Grand Action" },
-        { coordinates: [2.353602, 48.858676], description: "Luminor Hotel de Ville" },
-        { coordinates: [2.344856, 48.871370], description: "Max Linder Panorama" },
-        { coordinates: [2.342385, 48.847488], description: "Cinéma du Panthéon" },
-        { coordinates: [2.349555, 48.841300], description: "Épée de bois" },
-        { coordinates: [2.375488, 48.832448], description: "MK2 Bibliothèque" },
-        { coordinates: [2.352312, 48.861584], description: "MK2 Beaubourg" }
-    ];
-
-    locations.forEach(function (location) {
-        var el = document.createElement('div');
-        el.className = 'custom-marker';
-
-        var popup = new mapboxgl.Popup({ offset: 25 }).setText(location.description);
-
-        new mapboxgl.Marker(el)
-            .setLngLat(location.coordinates)
-            .setPopup(popup)
-            .addTo(map);
-    });
-</script>
-
 
 {% endblock %}

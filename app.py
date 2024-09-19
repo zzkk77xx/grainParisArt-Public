@@ -11,16 +11,65 @@ from modules.urlGenerator import decalageDate
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
+def format(cinema, nb):
+    return ({
+        "salle": cinema["salle"],
+        "url": decalageDate(cinema["url"], nb)
+    })
 
-
-cinemas = [
+# https://www.sensacine.com/cines/cine/E0764/
+cinemas_data = [
         {
-            "salle" : "Écoles Cinéma Club",
+            "salle" : "Arenas Multicines 3D",
             "url" : "https://www.sensacine.com/cines/cine/E0764/"
         },
         {
-            "salle" : "MK2 Bibliothèque",
-            "url" : "https://www.allocine.fr/seance/salle_gen_csalle=C2954.html",
+            "salle" : "Bosque Multicines",
+            "url" : "https://www.sensacine.com/cines/cine/E0136/",
+        },
+        {
+            "salle": "Balmes Multicines",
+            "url": "https://www.sensacine.com/cines/cine/E0808/"
+        },
+        {
+            "salle": "Cinesa Diagonal",
+            "url": "https://www.sensacine.com/cines/cine/E0381/"
+        },
+        {
+            "salle": "Aribau Multicines",
+            "url": "https://www.sensacine.com/cines/cine/E0091/"
+        },
+        {
+            "salle": "Cinesa Diagonal Mar",
+            "url": "https://www.sensacine.com/cines/cine/E0382/"
+        },
+        {
+            "salle": "Cines Verdi Barcelona",
+            "url": "https://www.sensacine.com/cines/cine/E0608/"
+        },
+        {
+            "salle": "Renoir Floridablanca",
+            "url": "https://www.sensacine.com/cines/cine/E0581/"
+        },
+        {
+            "salle": "Gran Sarrià Multicines",
+            "url": "https://www.sensacine.com/cines/cine/E0447/"
+        },
+        {
+            "salle": "Cinemes Girona",
+            "url": "https://www.sensacine.com/cines/cine/E0747/"
+        },
+        {
+            "salle": "Glòries Multicines",
+            "url": "https://www.sensacine.com/cines/cine/E0442/"
+        },
+        {
+            "salle": "Sala Phenomena Experience",
+            "url": "https://www.sensacine.com/cines/cine/E0544/"
+        },
+        {
+            "salle": "Cinesa SOM Multiespai",
+            "url": "https://www.sensacine.com/cines/cine/E0388/"
         },
     ]
 
@@ -65,6 +114,7 @@ def home():
         }
     }
 
+    cinemas = cinemas_data
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
 
@@ -113,17 +163,8 @@ def jour1():
     }
 
     films = []
-
-    cinemas = [
-        {
-            "salle" : "Écoles Cinéma Club",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C0071.html#shwt_date=", 1)
-        },
-        {
-            "salle" : "MK2 Bibliothèque",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C2954.html#shwt_date=l",1)
-        },
-    ]
+    
+    cinemas = list(map(lambda cinema: format(cinema, 1), cinemas))
 
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
@@ -173,6 +214,7 @@ def jour2():
 
     films = []
 
+    cinemas = list(map(lambda cinema: format(cinema, 2), cinemas))
 
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
@@ -222,16 +264,7 @@ def jour3():
 
     films = []
 
-    cinemas = [
-        {
-            "salle" : "Écoles Cinéma Club",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C0071.html#shwt_date=", 3)
-        },
-        {
-            "salle" : "MK2 Bibliothèque",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C2954.html#shwt_date=l",3)
-        },
-    ]
+    cinemas = list(map(lambda cinema: format(cinema, 3), cinemas))
 
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
@@ -281,16 +314,7 @@ def jour4():
 
     films = []
 
-    cinemas = [
-        {
-            "salle" : "Écoles Cinéma Club",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C0071.html#shwt_date=", 4)
-        },
-        {
-            "salle" : "MK2 Bibliothèque",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C2954.html#shwt_date=l",4)
-        },
-    ]
+    cinemas = list(map(lambda cinema: format(cinema, 4), cinemas))
 
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
@@ -340,16 +364,7 @@ def jour5():
 
     films = []
 
-    cinemas = [
-        {
-            "salle" : "Écoles Cinéma Club",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C0071.html#shwt_date=",5)
-        },
-        {
-            "salle" : "MK2 Bibliothèque",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C2954.html#shwt_date=l",5)
-        },
-    ]
+    cinemas = list(map(lambda cinema: format(cinema, 5), cinemas))
 
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
@@ -399,17 +414,8 @@ def jour6():
 
     films = []
 
-    cinemas = [
-        {
-            "salle" : "Écoles Cinéma Club",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C0071.html#shwt_date=", 6)
-        },
-        {
-            "salle" : "MK2 Bibliothèque",
-            "url" : decalageDate("https://www.allocine.fr/seance/salle_gen_csalle=C2954.html#shwt_date=l",6)
-        },
-    ]
-
+    cinemas = list(map(lambda cinema: format(cinema, 6), cinemas))
+    
     films = get_data(cinemas)
     filmsClean = cleanFilms(films)
     
