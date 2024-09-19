@@ -26,73 +26,72 @@ def scrap_infoFilm(url, cinema):
             else:
                 realisateur = "Réalisateur non trouvé"
 
-                # Extraction de l'image
-                thumbnail_img = film.find('img', class_='thumbnail-img')
-                if thumbnail_img and not thumbnail_img['src'].startswith('data:image'):
-                    img_url = thumbnail_img['src']
-                else:
-                    urlAffiche = "https://www.allocine.fr" + film.find("div", class_="meta").find('h2', class_="meta-title").find("a")['href']
-                    responseAffiche = requests.get(urlAffiche)
-                    pageFilm = BeautifulSoup(responseAffiche.text, 'html.parser')
-                    thumbnail_img = pageFilm.find('img', class_='thumbnail-img')
-                    img_url = thumbnail_img['src'] if thumbnail_img and not thumbnail_img['src'].startswith('data:image') else 'Image de la vignette non trouvée'
+            # Extraction de l'image
+            thumbnail_img = film.find('img', class_='thumbnail-img')
+            if thumbnail_img and not thumbnail_img['src'].startswith('data:image'):
+                img_url = thumbnail_img['src']
+            else:
+                urlAffiche = "https://www.allocine.fr" + film.find("div", class_="meta").find('h2', class_="meta-title").find("a")['href']
+                responseAffiche = requests.get(urlAffiche)
+                pageFilm = BeautifulSoup(responseAffiche.text, 'html.parser')
+                thumbnail_img = pageFilm.find('img', class_='thumbnail-img')
+                img_url = thumbnail_img['src'] if thumbnail_img and not thumbnail_img['src'].startswith('data:image') else 'Image de la vignette non trouvée'
 
-                synopsis = film.find('div', class_="synopsis").find('div', class_="content-txt").get_text() if film.find('div', class_="synopsis") else "synopsis non trouvé"
-                acteur_container = film.find("div", class_="meta-body-item meta-body-actor")
-                acteurs = [acteur.get_text() for acteur in acteur_container.find_all("span", class_="dark-grey-link")] if acteur_container else ["acteurs non trouvés"]
+            synopsis = film.find('div', class_="synopsis").find('div', class_="content-txt").get_text() if film.find('div', class_="synopsis") else "synopsis non trouvé"
+            acteur_container = film.find("div", class_="meta-body-item meta-body-actor")
+            acteurs = [acteur.get_text() for acteur in acteur_container.find_all("span", class_="dark-grey-link")] if acteur_container else ["acteurs non trouvés"]
 
-                horaire_sections = film.find_all("div", class_="showtimes-hour-block")
-                horaires = [horaire_section.find('span', class_="showtimes-hour-item-value").get_text() for horaire_section in horaire_sections if horaire_section.find('span', class_="showtimes-hour-item-value")] or ["Horaire non trouvé"]
+            horaire_sections = film.find_all("div", class_="showtimes-hour-block")
+            horaires = [horaire_section.find('span', class_="showtimes-hour-item-value").get_text() for horaire_section in horaire_sections if horaire_section.find('span', class_="showtimes-hour-item-value")] or ["Horaire non trouvé"]
 
-                genre_container = film.find("div", class_="meta-body-item meta-body-info")
-                genres = [span.get_text().strip() for span in genre_container.find_all("span") if 'class' in span.attrs and not span.attrs['class'][0].startswith('spacer') and 'nationality' not in span.attrs['class']] if genre_container else ["Genre non trouvé"]
-                if genres: genres.pop(0)
+            genre_container = film.find("div", class_="meta-body-item meta-body-info")
+            genres = [span.get_text().strip() for span in genre_container.find_all("span") if 'class' in span.attrs and not span.attrs['class'][0].startswith('spacer') and 'nationality' not in span.attrs['class']] if genre_container else ["Genre non trouvé"]
+            if genres: genres.pop(0)
 
-                # Récupération de la durée du film
-                url = "https://api.themoviedb.org/3/search/movie?query=" + titre
+            # Récupération de la durée du film
+            url = "https://api.themoviedb.org/3/search/movie?query=" + titre
 
-                headers = {
-                    "accept": "application/json",
-                    "Authorization": "###"
-                }
+            headers = {
+                "accept": "application/json",
+                "Authorization": "###"
+            }
 
-                response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers)
 
-                if response.status_code == 200:
+            if response.status_code == 200:
+                data = response.json()
+                if data['results']:
+                    film_id = data['results'][0]['id']
+                    url = "https://api.themoviedb.org/3/movie/" + str(film_id)
+                    response = requests.get(url, headers=headers)
+
                     data = response.json()
-                    if data['results']:
-                        film_id = data['results'][0]['id']
-                        url = "https://api.themoviedb.org/3/movie/" + str(film_id)
-                        response = requests.get(url, headers=headers)
+                    duree_film = data['runtime']
 
-                        data = response.json()
-                        duree_film = data['runtime']
-
-                        heure = duree_film // 60
-                        minute = duree_film % 60
-                    else:
-                        heure = 0
-                        minute = 0
+                    heure = duree_film // 60
+                    minute = duree_film % 60
                 else:
                     heure = 0
                     minute = 0
+            else:
+                heure = 0
+                minute = 0
 
-                film_data = {
-                    "titre": titre,
-                    "realisateur": realisateur,
-                    "casting": acteurs,
-                    "genres": genres,
-                    "duree": {"heure": heure, "minute": minute},
-                    "affiche": img_url,
-                    "synopsis": synopsis,
-                    "horaires": [
-                        {
-                            "cinema": cinema,
-                            "seances": horaires
-                        }
-                    ]
-                }
-                print(f"{film_data['titre']} : enregistré dans la db")
+            film_data = {
+                "titre": titre,
+                "realisateur": realisateur,
+                "casting": acteurs,
+                "genres": genres,
+                "duree": {"heure": heure, "minute": minute},
+                "affiche": img_url,
+                "synopsis": synopsis,
+                "horaires": [
+                    {
+                        "cinema": cinema,
+                        "seances": horaires
+                    }
+                ]
+            }
 
             existing_film = next((f for f in films if f["titre"] == titre), None)
             if existing_film:
