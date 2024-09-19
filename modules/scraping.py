@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 import requests_cache
 from datetime import timedelta
-from modules.firebase import enregistrementFilm, recupererDataFilm
 
 
 requests_cache.install_cache('film_cache', expire_after=timedelta(minutes=5))
@@ -27,8 +26,6 @@ def scrap_infoFilm(url, cinema):
             else:
                 realisateur = "Réalisateur non trouvé"
 
-            dataFilm_firebase = recupererDataFilm(titre, realisateur)
-            if dataFilm_firebase == 0:
                 # Extraction de l'image
                 thumbnail_img = film.find('img', class_='thumbnail-img')
                 if thumbnail_img and not thumbnail_img['src'].startswith('data:image'):
@@ -95,30 +92,8 @@ def scrap_infoFilm(url, cinema):
                         }
                     ]
                 }
-                enregistrementFilm(film_data)
                 print(f"{film_data['titre']} : enregistré dans la db")
-            else:
-                horaire_sections = film.find_all("div", class_="showtimes-hour-block")
-                horaires = [horaire_section.find('span', class_="showtimes-hour-item-value").get_text() for horaire_section in horaire_sections if horaire_section.find('span', class_="showtimes-hour-item-value")] or ["Horaire non trouvé"]
 
-                film_data = {
-                    "titre": dataFilm_firebase['titre'],
-                    "realisateur": dataFilm_firebase['realisateur'],
-                    "casting": dataFilm_firebase['casting'],
-                    'genres': ['Drame', 'Romance'], 
-                    "duree": dataFilm_firebase['duree'],
-                    "affiche": dataFilm_firebase['affiche'],
-                    "synopsis": dataFilm_firebase['synopsis'],
-                    "horaires": [
-                        {
-                            "cinema": cinema,
-                            "seances": horaires
-                        }
-                    ]
-                }
-                print(f"{film_data['titre']} : récupéré dans la db")
-
-            # Ajout du film s'il n'existe pas déjà
             existing_film = next((f for f in films if f["titre"] == titre), None)
             if existing_film:
                 existing_film["horaires"].append({
