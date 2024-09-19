@@ -2,3 +2,5 @@ bin/
 lib/
 .DS_Store
 __pycache__/
+modules/__pycache__/
+*.sqlite
